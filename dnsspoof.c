@@ -217,7 +217,7 @@ dns_spoof(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
 	if (type == T_A) {
 		if ((dst = dns_lookup_a(name)) == -1)
 			return;
-		/* XXX - cheat on alignment. */
+/* XXX - cheat on alignment. */
 		memcpy(p, "\xc0\x0c\x00\x01\x00\x01\x00\x00\x00\x3c\x00\x04",
 		       12);
 		memcpy(p + 12, &dst, sizeof(dst));
@@ -229,6 +229,8 @@ dns_spoof(u_char *u, const struct pcap_pkthdr *pkthdr, const u_char *pkt)
 		/* XXX - cheat on alignment. */
 		memcpy(p, "\xc0\x0c\x00\x0c\x00\x01\x00\x00\x00\x3c", 10);
 		anslen = dn_comp(q, p + 12, 256, NULL, NULL);
+		if (anslen < 0)
+			return;
 		p += 10;
 		PUTSHORT(anslen, p);
 		anslen += 12;
